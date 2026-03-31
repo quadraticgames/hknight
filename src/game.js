@@ -18,32 +18,31 @@ class AttackHitbox extends pc.Script {
         
         // Simple custom AABB vs AABB intersection for enemies
         var myPos = this.entity.getPosition();
-        var enemies = this.app.root.findByName('enemy');
+        var enemies = this.app.root.findByTag('enemy');
         
-        // Hitbox half extents: 1.0, 0.75
+        // Hitbox half extents: 1.0, 0.75 (from setLocalScale(2.0, 1.5, 0.2))
         for (var i = 0; i < enemies.length; i++) {
             var enemy = enemies[i];
             if (this.hitEnemies.includes(enemy.getGuid())) continue;
             
             var ePos = enemy.getPosition();
-            // Enemy half extents: 0.25 (since size is 0.5)
+            // Enemy half extents: 0.5 (since size/scale is 1.0)
             
             var dx = Math.abs(myPos.x - ePos.x);
             var dy = Math.abs(myPos.y - ePos.y);
             
-            if (dx < (1.0 + 0.25) && dy < (0.75 + 0.25)) {
+            if (dx < (1.0 + 0.5) && dy < (0.75 + 0.5)) {
                 // Hit
                 this.hitEnemies.push(enemy.getGuid());
                 if (enemy.script && enemy.script.enemyController) {
                     enemy.script.enemyController.takeDamage(1, this.direction);
+                    console.log("Attack hit enemy!");
                 }
                 
-                // Push player back slightly
+                // Pogo/Recoil effect using player's knockX
                 var player = this.app.root.findByGuid(this.ownerId);
                 if (player && player.script && player.script.playerController) {
-                    // simple recoil hack
-                    player.script.playerController.dashTimer = 0.1;
-                    player.script.playerController.direction = -this.direction;
+                    player.script.playerController.knockX = -this.direction * 10;
                 }
             }
         }
