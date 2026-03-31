@@ -1,4 +1,4 @@
-class PlayerController extends pc.Script {
+class PlayerController extends pc.ScriptType {
     initialize() {
         if (this.speed === undefined) this.speed = 8;
         if (this.jumpForce === undefined) this.jumpForce = 15;
@@ -228,3 +228,11 @@ class PlayerController extends pc.Script {
     }
 }
 pc.registerScript(PlayerController, 'playerController');
+
+// Editor Attributes for Migration (Safe for standalone)
+if (PlayerController.attributes) {
+    PlayerController.attributes.add('speed', { type: 'number', default: 8, title: 'Speed' });
+    PlayerController.attributes.add('jumpForce', { type: 'number', default: 15, title: 'Jump Force' });
+    PlayerController.attributes.add('dashForce', { type: 'number', default: 20, title: 'Dash Force' });
+    PlayerController.attributes.add('attackDuration', { type: 'number', default: 0.2, title: 'Slash Timer' });
+}

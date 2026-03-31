@@ -1,4 +1,4 @@
-class EnemyController extends pc.Script {
+class EnemyController extends pc.ScriptType {
     initialize() {
         if (this.speed === undefined) this.speed = 2;
         if (this.health === undefined) this.health = 3;
@@ -91,3 +91,10 @@ class EnemyController extends pc.Script {
     }
 }
 pc.registerScript(EnemyController, 'enemyController');
+
+// Editor Attributes for Migration (Safe for standalone)
+if (EnemyController.attributes) {
+    EnemyController.attributes.add('speed', { type: 'number', default: 2, title: 'Patrol Speed' });
+    EnemyController.attributes.add('health', { type: 'number', default: 3, title: 'Enemy HP' });
+    EnemyController.attributes.add('knockbackForce', { type: 'number', default: 5, title: 'Hurt Force' });
+}

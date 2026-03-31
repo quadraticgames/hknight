@@ -1,4 +1,4 @@
-class CameraFollow extends pc.Script {
+class CameraFollow extends pc.ScriptType {
     initialize() {
         if (this.target === undefined) this.target = null;
         if (this.lerpSpeed === undefined) this.lerpSpeed = 5;
@@ -23,3 +23,10 @@ class CameraFollow extends pc.Script {
     }
 }
 pc.registerScript(CameraFollow, 'cameraFollow');
+
+// Editor Attributes for Migration (Safe for standalone)
+if (CameraFollow.attributes) {
+    CameraFollow.attributes.add('target', { type: 'entity', title: 'Target' });
+    CameraFollow.attributes.add('lerpSpeed', { type: 'number', default: 5, title: 'Smooth Speed' });
+    CameraFollow.attributes.add('offset', { type: 'vec3', default: [0, 2, 10], title: 'Camera Offset' });
+}
