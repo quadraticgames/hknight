@@ -91,12 +91,9 @@ function initializeGame() {
             projection: pc.PROJECTION_PERSPECTIVE
         });
         camera.addComponent('script');
-        camera.script.create('cameraFollow', {
-            attributes: {
-                offset: new pc.Vec3(0, 3, 14),
-                lerpSpeed: 6
-            }
-        });
+        let camScript = camera.script.create('cameraFollow');
+        camScript.offset = new pc.Vec3(0, 3, 14);
+        camScript.lerpSpeed = 6;
         app.root.addChild(camera);
 
         // Materials setup
@@ -165,11 +162,8 @@ function initializeGame() {
         function createEnemyInstance(x, y) {
             const enemy = createBox('enemy', x, y, 0.5, 0.5, 0.5, enemyMat, false);
             enemy.addComponent('script');
-            enemy.script.create('enemyController', {
-                attributes: {
-                    speed: 3
-                }
-            });
+            let enemyScript = enemy.script.create('enemyController');
+            enemyScript.speed = 3;
             app.root.addChild(enemy);
         }
 

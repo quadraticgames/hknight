@@ -141,13 +141,10 @@ class PlayerController extends pc.Script {
         attackHitbox.setPosition(hitCenter);
         
         attackHitbox.addComponent('script');
-        attackHitbox.script.create('attackHitbox', {
-            attributes: {
-                lifetime: this.attackDuration,
-                direction: this.direction,
-                ownerId: this.entity.getGuid()
-            }
-        });
+        let hitboxScript = attackHitbox.script.create('attackHitbox');
+        hitboxScript.lifetime = this.attackDuration;
+        hitboxScript.direction = this.direction;
+        hitboxScript.ownerId = this.entity.getGuid();
 
         app.root.addChild(attackHitbox);
     }
