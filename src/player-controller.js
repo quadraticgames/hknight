@@ -121,13 +121,14 @@ class PlayerController extends pc.Script {
 
         // Enemy Collision (Damage)
         if (this.invincibleTimer <= 0) {
-            var enemies = this.app.root.findByName('enemy');
+            var enemies = this.app.root.findByTag('enemy');
             for (var i = 0; i < enemies.length; i++) {
                 var ePos = enemies[i].getPosition();
-                // Enemy size 0.5 (HW 0.25)
+                // Enemy HW was 0.5 (from createBox call)
                 var dx = Math.abs(pos.x - ePos.x);
                 var dy = Math.abs(pos.y - ePos.y);
-                if (dx < (pHW + 0.25) && dy < (pHH + 0.25)) {
+                if (dx < (pHW + 0.5) && dy < (pHH + 0.5)) {
+                    console.log("Collision with enemy at " + ePos.x + ", " + ePos.y);
                     this.takeDamage(1, pos.x < ePos.x ? -1 : 1);
                     break;
                 }

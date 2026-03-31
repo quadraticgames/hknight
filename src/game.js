@@ -161,6 +161,7 @@ function initializeGame() {
         // Enemies
         function createEnemyInstance(x, y) {
             const enemy = createBox('enemy', x, y, 0.5, 0.5, 0.5, enemyMat, false);
+            enemy.tags.add('enemy');
             enemy.addComponent('script');
             let enemyScript = enemy.script.create('enemyController');
             enemyScript.speed = 3;
