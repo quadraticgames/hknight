@@ -19,7 +19,11 @@ class PlayerController extends pc.ScriptType {
         this.velocityY = 0;
         
         // Save original material for flickering
-        this.playerMat = this.entity.model.material;
+        if (this.entity.model) {
+            this.playerMat = this.entity.model.material;
+        } else if (this.entity.render) {
+            this.playerMat = this.entity.render.material;
+        }
         
         // Create attack visual indicator material
         this.attackMat = new pc.StandardMaterial();
@@ -38,8 +42,14 @@ class PlayerController extends pc.ScriptType {
         // Invincibility flicker
         if (this.invincibleTimer > 0) {
             this.invincibleTimer -= dt;
-            this.entity.model.enabled = (Math.floor(this.invincibleTimer * 10) % 2 === 0);
-            if (this.invincibleTimer <= 0) this.entity.model.enabled = true;
+            var isVisible = (Math.floor(this.invincibleTimer * 10) % 2 === 0);
+            if (this.entity.model) this.entity.model.enabled = isVisible;
+            if (this.entity.render) this.entity.render.enabled = isVisible;
+            
+            if (this.invincibleTimer <= 0) {
+                if (this.entity.model) this.entity.model.enabled = true;
+                if (this.entity.render) this.entity.render.enabled = true;
+            }
         }
 
         // Knockback recovery
