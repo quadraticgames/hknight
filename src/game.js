@@ -184,8 +184,67 @@ function initializeGame() {
             app.root.addChild(column);
         }
         
+        createHUD();
         createControlsHint();
     }
+}
+
+function createHUD() {
+    const app = pc.app;
+    let hud = document.createElement('div');
+    hud.id = 'game-hud';
+    hud.style.position = 'absolute';
+    hud.style.top = '20px';
+    hud.style.right = '20px';
+    hud.style.zIndex = '1000';
+    hud.style.display = 'flex';
+    hud.style.gap = '10px';
+    document.body.appendChild(hud);
+
+    function updateHearts(health) {
+        hud.innerHTML = '';
+        // 3 hearts total, health is 0-6 (each heart is 2 pts)
+        for (let i = 0; i < 3; i++) {
+            let heartVal = health - (i * 2);
+            let heartType = 'empty';
+            if (heartVal >= 2) heartType = 'full';
+            else if (heartVal === 1) heartType = 'half';
+            
+            let svg = createHeartSVG(heartType);
+            hud.appendChild(svg);
+        }
+    }
+
+    function createHeartSVG(type) {
+        let span = document.createElement('span');
+        let color = type === 'empty' ? '#333' : '#e74c3c';
+        let inner = '';
+        
+        if (type === 'half') {
+            inner = `
+                <defs>
+                    <linearGradient id="halfGrad">
+                        <stop offset="50%" stop-color="#e74c3c" />
+                        <stop offset="50%" stop-color="#333" stop-opacity="1" />
+                    </linearGradient>
+                </defs>
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#halfGrad)"/>
+            `;
+        } else {
+            inner = `<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="${color}"/>`;
+        }
+
+        span.innerHTML = `<svg width="32" height="32" viewBox="0 0 24 24">${inner}</svg>`;
+        return span;
+    }
+
+    // Initial draw
+    updateHearts(6);
+    
+    // Listen for health updates
+    app.on('player:health:update', (health) => {
+        updateHearts(health);
+    });
 }
 
 function createControlsHint() {

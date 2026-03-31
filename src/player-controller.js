@@ -7,7 +7,8 @@ class PlayerController extends pc.Script {
 
         this.app.keyboard.on(pc.EVENT_KEYDOWN, this.onKeyDown, this);
         
-        this.health = 5;
+        this.health = 6;
+        this.app.fire('player:health:update', this.health);
         this.invincibleTimer = 0;
         this.knockX = 0;
         this.isGrounded = false;
@@ -173,7 +174,8 @@ class PlayerController extends pc.Script {
     }
 
     takeDamage(amount, knockDirection) {
-        this.health -= amount;
+        this.health -= amount; // amount is 1 = half heart
+        this.app.fire('player:health:update', this.health);
         this.invincibleTimer = 1.0; // 1 second invincibility
         this.knockX = knockDirection * 15;
         this.velocityY = 10; // small pop upwards
@@ -182,7 +184,8 @@ class PlayerController extends pc.Script {
         
         if (this.health <= 0) {
             // Relocate for demo instead of full death logic
-            this.health = 5;
+            this.health = 6;
+            this.app.fire('player:health:update', this.health);
             this.entity.setPosition(-10, 5, 0);
         }
     }
