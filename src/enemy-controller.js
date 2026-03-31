@@ -45,8 +45,13 @@ class EnemyController extends pc.ScriptType {
         // Resolve X
         pos.x += moveX;
         for (var i = 0; i < solids.length; i++) {
-            var bounds = solids[i].customBounds;
-            if (!bounds) continue;
+            var ent = solids[i];
+            var bounds = ent.customBounds;
+            if (!bounds) {
+                var s = ent.getLocalScale();
+                var p = ent.getPosition();
+                bounds = { x: p.x, y: p.y, hw: s.x / 2, hh: s.y / 2 };
+            }
             if (Math.abs(pos.x - bounds.x) < (eHW + bounds.hw) && 
                 Math.abs(pos.y - bounds.y) < (eHH + bounds.hh - 0.1)) {
                 // Turn around instantly if we hit a wall
@@ -59,8 +64,13 @@ class EnemyController extends pc.ScriptType {
         // Resolve Y
         pos.y += moveY;
         for (var i = 0; i < solids.length; i++) {
-            var bounds = solids[i].customBounds;
-            if (!bounds) continue;
+            var ent = solids[i];
+            var bounds = ent.customBounds;
+            if (!bounds) {
+                var s = ent.getLocalScale();
+                var p = ent.getPosition();
+                bounds = { x: p.x, y: p.y, hw: s.x / 2, hh: s.y / 2 };
+            }
             if (Math.abs(pos.x - bounds.x) < (eHW + bounds.hw - 0.1) && 
                 Math.abs(pos.y - bounds.y) < (eHH + bounds.hh)) {
                 if (pos.y > bounds.y) {

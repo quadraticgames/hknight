@@ -93,8 +93,13 @@ class PlayerController extends pc.ScriptType {
         // 1. Move X and resolve
         pos.x += moveX;
         for (var i = 0; i < solids.length; i++) {
-            var bounds = solids[i].customBounds;
-            if (!bounds) continue;
+            var ent = solids[i];
+            var bounds = ent.customBounds;
+            if (!bounds) {
+                var s = ent.getLocalScale();
+                var p = ent.getPosition();
+                bounds = { x: p.x, y: p.y, hw: s.x / 2, hh: s.y / 2 };
+            }
             
             if (Math.abs(pos.x - bounds.x) < (pHW + bounds.hw) && 
                 Math.abs(pos.y - bounds.y) < (pHH + bounds.hh - 0.1)) {
@@ -109,8 +114,13 @@ class PlayerController extends pc.ScriptType {
         // 2. Move Y and resolve
         pos.y += moveY;
         for (var i = 0; i < solids.length; i++) {
-            var bounds = solids[i].customBounds;
-            if (!bounds) continue;
+            var ent = solids[i];
+            var bounds = ent.customBounds;
+            if (!bounds) {
+                var s = ent.getLocalScale();
+                var p = ent.getPosition();
+                bounds = { x: p.x, y: p.y, hw: s.x / 2, hh: s.y / 2 };
+            }
             
             if (Math.abs(pos.x - bounds.x) < (pHW + bounds.hw - 0.1) && 
                 Math.abs(pos.y - bounds.y) < (pHH + bounds.hh)) {
