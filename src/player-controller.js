@@ -121,14 +121,34 @@ class PlayerController extends pc.Script {
 
         // Enemy Collision (Damage)
         if (this.invincibleTimer <= 0) {
-            var enemies = this.app.root.findByTag('enemy');
+            // Find all potential enemies
+            var enemiesByName = this.app.root.findByName('enemy');
+            var enemiesByTag = this.app.root.findByTag('enemy');
+            
+            // Combine and unique
+            var enemies = [];
+            if (enemiesByName instanceof Array) enemies = enemies.concat(enemiesByName);
+            else if (enemiesByName) enemies.push(enemiesByName);
+            enemies = enemies.concat(enemiesByTag);
+            
+            // Filter unique
+            enemies = enemies.filter((v, i, a) => a.indexOf(v) === i);
+
             for (var i = 0; i < enemies.length; i++) {
-                var ePos = enemies[i].getPosition();
-                // Enemy HW was 0.5 (from createBox call)
+                var enemy = enemies[i];
+                if (enemy === this.entity) continue;
+                
+                var ePos = enemy.getPosition();
                 var dx = Math.abs(pos.x - ePos.x);
                 var dy = Math.abs(pos.y - ePos.y);
+                
+                // Debug log if very close
+                if (dx < 2 && dy < 2) {
+                    // console.log("Near enemy: dx=" + dx.toFixed(2) + " dy=" + dy.toFixed(2));
+                }
+
                 if (dx < (pHW + 0.5) && dy < (pHH + 0.5)) {
-                    console.log("Collision with enemy at " + ePos.x + ", " + ePos.y);
+                    console.log("!!! HIT ENEMY !!! at " + ePos.x.toFixed(2) + ", " + ePos.y.toFixed(2));
                     this.takeDamage(1, pos.x < ePos.x ? -1 : 1);
                     break;
                 }
