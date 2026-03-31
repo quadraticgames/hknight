@@ -25,6 +25,9 @@ class PlayerController extends pc.ScriptType {
             this.playerMat = this.entity.render.material;
         }
         
+        var solidsFound = this.app.root.findByTag('solid');
+        console.log("Player initialized. Collision solids found: " + solidsFound.length);
+        
         // Create attack visual indicator material
         this.attackMat = new pc.StandardMaterial();
         this.attackMat.diffuse = new pc.Color(1, 1, 1);
