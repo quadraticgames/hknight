@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hollow Knight Style Platformer</title>
+    <style>
+        body { margin: 0; padding: 0; overflow: hidden; background-color: #000; }
+        canvas { display: block; width: 100vw; height: 100vh; }
+    </style>
+    <!-- Load PlayCanvas Engine -->
+    <script src="https://code.playcanvas.com/playcanvas-stable.min.js"></script>
+</head>
+<body>
+    <canvas id="application-canvas"></canvas>
+    
+    <!-- Create the global PlayCanvas application instance before scripts that rely on pc.createScript -->
+    <script>
+        var canvas = document.getElementById('application-canvas');
+        var app = new pc.Application(canvas, {
+            keyboard: new pc.Keyboard(window),
+            mouse: new pc.Mouse(canvas)
+        });
+    </script>
+    
+    <!-- Scripts -->
+    <script src="src/player-controller.js"></script>
+    <script src="src/camera-follow.js"></script>
+    <script src="src/enemy-controller.js"></script>
+    <script src="src/game.js"></script>
+</body>
+</html>
