@@ -49,14 +49,48 @@ PlayerController.prototype.update = function(dt) {
     
     // Custom gravity
     this.velocityY -= 40 * dt;
-    pos.x += forceX * dt;
-    pos.y += this.velocityY * dt;
+    var moveX = forceX * dt;
+    var moveY = this.velocityY * dt;
     
-    // Quick floor boundary
-    if (pos.y <= 0.8) {
-        pos.y = 0.8;
-        this.velocityY = 0;
-        this.isGrounded = true;
+    var solids = this.app.root.findByTag('solid');
+    var pHW = 0.4; // Player half width
+    var pHH = 0.8; // Player half height
+    
+    // 1. Move X and resolve
+    pos.x += moveX;
+    for (var i = 0; i < solids.length; i++) {
+        var bounds = solids[i].customBounds;
+        if (!bounds) continue;
+        
+        if (Math.abs(pos.x - bounds.x) < (pHW + bounds.hw) && 
+            Math.abs(pos.y - bounds.y) < (pHH + bounds.hh - 0.1)) {
+            // Push back horizontally
+            if (pos.x < bounds.x) pos.x = bounds.x - bounds.hw - pHW;
+            else pos.x = bounds.x + bounds.hw + pHW;
+        }
+    }
+    
+    this.isGrounded = false;
+    
+    // 2. Move Y and resolve
+    pos.y += moveY;
+    for (var i = 0; i < solids.length; i++) {
+        var bounds = solids[i].customBounds;
+        if (!bounds) continue;
+        
+        if (Math.abs(pos.x - bounds.x) < (pHW + bounds.hw - 0.1) && 
+            Math.abs(pos.y - bounds.y) < (pHH + bounds.hh)) {
+            
+            // Push back vertically
+            if (pos.y > bounds.y) {
+                pos.y = bounds.y + bounds.hh + pHH;
+                this.velocityY = 0;
+                this.isGrounded = true;
+            } else {
+                pos.y = bounds.y - bounds.hh - pHH;
+                this.velocityY = 0;
+            }
+        }
     }
 
     // Apply exact position

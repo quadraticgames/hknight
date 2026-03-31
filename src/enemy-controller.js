@@ -10,6 +10,7 @@ EnemyController.prototype.initialize = function() {
     this.colorMat = this.entity.model.material;
     this.hurtTimer = 0;
     this.knockX = 0;
+    this.velocityY = 0;
 };
 
 EnemyController.prototype.update = function(dt) {
@@ -29,17 +30,49 @@ EnemyController.prototype.update = function(dt) {
     
     var pos = this.entity.getPosition();
 
-    // Recover from knockback
     if (Math.abs(this.knockX) > 0.1) {
-        this.knockX *= 0.8;
-    } else {
-        this.knockX = 0;
+        this.knockX -= Math.sign(this.knockX) * dt * 20;
+        if (Math.abs(this.knockX) < 1) this.knockX = 0;
     }
 
-    pos.x += ((this.direction * this.speed) + this.knockX) * dt;
-
-    // Floor boundary roughly
-    if (pos.y < 0.25) pos.y = 0.25;
+    var moveX = ((this.direction * this.speed) + this.knockX) * dt;
+    this.velocityY -= 40 * dt;
+    var moveY = this.velocityY * dt;
+    
+    var solids = this.app.root.findByTag('solid');
+    var eHW = 0.25;
+    var eHH = 0.25;
+    
+    // Resolve X
+    pos.x += moveX;
+    for (var i = 0; i < solids.length; i++) {
+        var bounds = solids[i].customBounds;
+        if (!bounds) continue;
+        if (Math.abs(pos.x - bounds.x) < (eHW + bounds.hw) && 
+            Math.abs(pos.y - bounds.y) < (eHH + bounds.hh - 0.05)) {
+            // Turn around instantly if we hit a wall
+            this.direction *= -1;
+            if (pos.x < bounds.x) pos.x = bounds.x - bounds.hw - eHW;
+            else pos.x = bounds.x + bounds.hw + eHW;
+        }
+    }
+    
+    // Resolve Y
+    pos.y += moveY;
+    for (var i = 0; i < solids.length; i++) {
+        var bounds = solids[i].customBounds;
+        if (!bounds) continue;
+        if (Math.abs(pos.x - bounds.x) < (eHW + bounds.hw - 0.05) && 
+            Math.abs(pos.y - bounds.y) < (eHH + bounds.hh)) {
+            if (pos.y > bounds.y) {
+                pos.y = bounds.y + bounds.hh + eHH;
+                this.velocityY = 0;
+            } else {
+                pos.y = bounds.y - bounds.hh - eHH;
+                this.velocityY = 0;
+            }
+        }
+    }
 
     this.entity.setPosition(pos);
 };

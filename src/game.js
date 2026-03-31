@@ -115,12 +115,17 @@ function initializeGame() {
         enemyMat.emissive = new pc.Color(0.2, 0.0, 0.0);
         enemyMat.update();
 
-        function createBox(name, x, y, hw, hh, hz, mat) {
+        function createBox(name, x, y, hw, hh, hz, mat, isSolid = true) {
             const ent = new pc.Entity(name);
             ent.addComponent('model', { type: 'box' });
             ent.model.material = mat;
             ent.setLocalScale(hw * 2, hh * 2, hz * 2);
             ent.setPosition(x, y, 0);
+            if (isSolid) {
+                ent.tags.add('solid');
+                // Store properties manually for our custom physics logic
+                ent.customBounds = { x: x, y: y, hw: hw, hh: hh };
+            }
             return ent;
         }
 
@@ -155,7 +160,7 @@ function initializeGame() {
 
         // Enemies
         function createEnemyInstance(x, y) {
-            const enemy = createBox('enemy', x, y, 0.5, 0.5, 0.5, enemyMat);
+            const enemy = createBox('enemy', x, y, 0.5, 0.5, 0.5, enemyMat, false);
             enemy.addComponent('script');
             enemy.script.create('enemyController', {
                 attributes: {
