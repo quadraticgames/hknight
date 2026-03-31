@@ -39,8 +39,8 @@ class EnemyController extends pc.Script {
         var moveY = this.velocityY * dt;
         
         var solids = this.app.root.findByTag('solid');
-        var eHW = 0.25;
-        var eHH = 0.25;
+        var eHW = 0.5; // Enemy half width (from scale 1.0)
+        var eHH = 0.5; // Enemy half height (from scale 1.0)
         
         // Resolve X
         pos.x += moveX;
@@ -48,7 +48,7 @@ class EnemyController extends pc.Script {
             var bounds = solids[i].customBounds;
             if (!bounds) continue;
             if (Math.abs(pos.x - bounds.x) < (eHW + bounds.hw) && 
-                Math.abs(pos.y - bounds.y) < (eHH + bounds.hh - 0.05)) {
+                Math.abs(pos.y - bounds.y) < (eHH + bounds.hh - 0.1)) {
                 // Turn around instantly if we hit a wall
                 this.direction *= -1;
                 if (pos.x < bounds.x) pos.x = bounds.x - bounds.hw - eHW;
@@ -61,7 +61,7 @@ class EnemyController extends pc.Script {
         for (var i = 0; i < solids.length; i++) {
             var bounds = solids[i].customBounds;
             if (!bounds) continue;
-            if (Math.abs(pos.x - bounds.x) < (eHW + bounds.hw - 0.05) && 
+            if (Math.abs(pos.x - bounds.x) < (eHW + bounds.hw - 0.1) && 
                 Math.abs(pos.y - bounds.y) < (eHH + bounds.hh)) {
                 if (pos.y > bounds.y) {
                     pos.y = bounds.y + bounds.hh + eHH;
