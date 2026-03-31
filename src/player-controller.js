@@ -7,12 +7,18 @@ class PlayerController extends pc.Script {
 
         this.app.keyboard.on(pc.EVENT_KEYDOWN, this.onKeyDown, this);
         
+        this.health = 5;
+        this.invincibleTimer = 0;
+        this.knockX = 0;
         this.isGrounded = false;
         this.direction = 1; // 1 for right, -1 for left
         this.isAttacking = false;
         this.attackTimer = 0;
         this.dashTimer = 0;
         this.velocityY = 0;
+        
+        // Save original material for flickering
+        this.playerMat = this.entity.model.material;
         
         // Create attack visual indicator material
         this.attackMat = new pc.StandardMaterial();
@@ -28,8 +34,22 @@ class PlayerController extends pc.Script {
         var pos = this.entity.getPosition();
         var forceX = 0;
 
+        // Invincibility flicker
+        if (this.invincibleTimer > 0) {
+            this.invincibleTimer -= dt;
+            this.entity.model.enabled = (Math.floor(this.invincibleTimer * 10) % 2 === 0);
+            if (this.invincibleTimer <= 0) this.entity.model.enabled = true;
+        }
+
+        // Knockback recovery
+        if (Math.abs(this.knockX) > 0.1) {
+            this.knockX -= Math.sign(this.knockX) * dt * 30;
+        } else {
+            this.knockX = 0;
+        }
+
         // Movement
-        if (this.dashTimer <= 0) {
+        if (this.dashTimer <= 0 && Math.abs(this.knockX) < 1) {
             if (app.keyboard.isPressed(pc.KEY_LEFT) || app.keyboard.isPressed(pc.KEY_A)) {
                 forceX = -this.speed;
                 this.direction = -1;
@@ -42,8 +62,12 @@ class PlayerController extends pc.Script {
                 this.entity.setLocalEulerAngles(0, this.direction === 1 ? 90 : -90, 0);
             }
         } else {
-            forceX = this.direction * this.dashForce;
-            this.dashTimer -= dt;
+            if (this.dashTimer > 0) {
+                forceX = this.direction * this.dashForce;
+                this.dashTimer -= dt;
+            } else {
+                forceX = this.knockX;
+            }
         }
         
         // Custom gravity
@@ -92,8 +116,23 @@ class PlayerController extends pc.Script {
             }
         }
 
-        // Apply exact position
+        // Apply position
         this.entity.setPosition(pos);
+
+        // Enemy Collision (Damage)
+        if (this.invincibleTimer <= 0) {
+            var enemies = this.app.root.findByName('enemy');
+            for (var i = 0; i < enemies.length; i++) {
+                var ePos = enemies[i].getPosition();
+                // Enemy size 0.5 (HW 0.25)
+                var dx = Math.abs(pos.x - ePos.x);
+                var dy = Math.abs(pos.y - ePos.y);
+                if (dx < (pHW + 0.25) && dy < (pHH + 0.25)) {
+                    this.takeDamage(1, pos.x < ePos.x ? -1 : 1);
+                    break;
+                }
+            }
+        }
 
         // State timers
         if (this.isAttacking) {
@@ -109,6 +148,21 @@ class PlayerController extends pc.Script {
         
         if (app.keyboard.wasPressed(pc.KEY_C) || app.keyboard.wasPressed(pc.KEY_SHIFT)) {
             this.dash();
+        }
+    }
+
+    takeDamage(amount, knockDirection) {
+        this.health -= amount;
+        this.invincibleTimer = 1.0; // 1 second invincibility
+        this.knockX = knockDirection * 15;
+        this.velocityY = 10; // small pop upwards
+        
+        console.log("Player hit! Health remaining: " + this.health);
+        
+        if (this.health <= 0) {
+            // Relocate for demo instead of full death logic
+            this.health = 5;
+            this.entity.setPosition(-10, 5, 0);
         }
     }
 
