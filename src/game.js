@@ -1,52 +1,54 @@
-var AttackHitbox = pc.createScript('attackHitbox');
-AttackHitbox.attributes.add('lifetime', { type: 'number', default: 0.2 });
-AttackHitbox.attributes.add('direction', { type: 'number', default: 1 });
-AttackHitbox.attributes.add('ownerId', { type: 'string' });
-
-AttackHitbox.prototype.initialize = function() {
-    this.timer = 0;
-    this.hitEnemies = []; 
-};
-
-AttackHitbox.prototype.update = function(dt) {
-    this.timer += dt;
-    if (this.timer > this.lifetime) {
-        this.entity.destroy();
-        return;
+class AttackHitbox extends pc.Script {
+    initialize() {
+        this.timer = 0;
+        this.hitEnemies = []; 
     }
-    
-    // Simple custom AABB vs AABB intersection for enemies
-    var myPos = this.entity.getPosition();
-    var enemies = this.app.root.findByName('enemy');
-    
-    // Hitbox half extents: 1.0, 0.75
-    for (var i = 0; i < enemies.length; i++) {
-        var enemy = enemies[i];
-        if (this.hitEnemies.includes(enemy.getGuid())) continue;
+
+    update(dt) {
+        this.hitEnemies = this.hitEnemies || [];
+        this.timer += dt;
+        if (this.timer > this.lifetime) {
+            this.entity.destroy();
+            return;
+        }
         
-        var ePos = enemy.getPosition();
-        // Enemy half extents: 0.25 (since size is 0.5)
+        // Simple custom AABB vs AABB intersection for enemies
+        var myPos = this.entity.getPosition();
+        var enemies = this.app.root.findByName('enemy');
         
-        var dx = Math.abs(myPos.x - ePos.x);
-        var dy = Math.abs(myPos.y - ePos.y);
-        
-        if (dx < (1.0 + 0.25) && dy < (0.75 + 0.25)) {
-            // Hit
-            this.hitEnemies.push(enemy.getGuid());
-            if (enemy.script && enemy.script.enemyController) {
-                enemy.script.enemyController.takeDamage(1, this.direction);
-            }
+        // Hitbox half extents: 1.0, 0.75
+        for (var i = 0; i < enemies.length; i++) {
+            var enemy = enemies[i];
+            if (this.hitEnemies.includes(enemy.getGuid())) continue;
             
-            // Push player back slightly
-            var player = this.app.root.findByGuid(this.ownerId);
-            if (player && player.script && player.script.playerController) {
-                // simple recoil hack
-                player.script.playerController.dashTimer = 0.1;
-                player.script.playerController.direction = -this.direction;
+            var ePos = enemy.getPosition();
+            // Enemy half extents: 0.25 (since size is 0.5)
+            
+            var dx = Math.abs(myPos.x - ePos.x);
+            var dy = Math.abs(myPos.y - ePos.y);
+            
+            if (dx < (1.0 + 0.25) && dy < (0.75 + 0.25)) {
+                // Hit
+                this.hitEnemies.push(enemy.getGuid());
+                if (enemy.script && enemy.script.enemyController) {
+                    enemy.script.enemyController.takeDamage(1, this.direction);
+                }
+                
+                // Push player back slightly
+                var player = this.app.root.findByGuid(this.ownerId);
+                if (player && player.script && player.script.playerController) {
+                    // simple recoil hack
+                    player.script.playerController.dashTimer = 0.1;
+                    player.script.playerController.direction = -this.direction;
+                }
             }
         }
     }
-};
+}
+pc.registerScript(AttackHitbox, 'attackHitbox');
+AttackHitbox.attributes.add('lifetime', { type: 'number', default: 0.2 });
+AttackHitbox.attributes.add('direction', { type: 'number', default: 1 });
+AttackHitbox.attributes.add('ownerId', { type: 'string' });
 
 // --- GAME INITIALIZATION --- //
 
