@@ -1,5 +1,10 @@
 class PlayerController extends pc.Script {
     initialize() {
+        if (this.speed === undefined) this.speed = 8;
+        if (this.jumpForce === undefined) this.jumpForce = 15;
+        if (this.dashForce === undefined) this.dashForce = 20;
+        if (this.attackDuration === undefined) this.attackDuration = 0.2;
+
         this.app.keyboard.on(pc.EVENT_KEYDOWN, this.onKeyDown, this);
         
         this.isGrounded = false;
@@ -148,7 +153,3 @@ class PlayerController extends pc.Script {
     }
 }
 pc.registerScript(PlayerController, 'playerController');
-PlayerController.attributes.add('speed', { type: 'number', default: 8 });
-PlayerController.attributes.add('jumpForce', { type: 'number', default: 15 });
-PlayerController.attributes.add('dashForce', { type: 'number', default: 20 });
-PlayerController.attributes.add('attackDuration', { type: 'number', default: 0.2 });

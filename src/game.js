@@ -1,5 +1,9 @@
 class AttackHitbox extends pc.Script {
     initialize() {
+        if (this.lifetime === undefined) this.lifetime = 0.2;
+        if (this.direction === undefined) this.direction = 1;
+        if (this.ownerId === undefined) this.ownerId = null;
+        
         this.timer = 0;
         this.hitEnemies = []; 
     }
@@ -46,9 +50,6 @@ class AttackHitbox extends pc.Script {
     }
 }
 pc.registerScript(AttackHitbox, 'attackHitbox');
-AttackHitbox.attributes.add('lifetime', { type: 'number', default: 0.2 });
-AttackHitbox.attributes.add('direction', { type: 'number', default: 1 });
-AttackHitbox.attributes.add('ownerId', { type: 'string' });
 
 // --- GAME INITIALIZATION --- //
 

@@ -1,4 +1,10 @@
 class CameraFollow extends pc.Script {
+    initialize() {
+        if (this.target === undefined) this.target = null;
+        if (this.lerpSpeed === undefined) this.lerpSpeed = 5;
+        if (this.offset === undefined) this.offset = new pc.Vec3(0, 2, 10);
+    }
+
     update(dt) {
         if (!this.target) return;
         
@@ -17,6 +23,3 @@ class CameraFollow extends pc.Script {
     }
 }
 pc.registerScript(CameraFollow, 'cameraFollow');
-CameraFollow.attributes.add('target', { type: 'entity', title: 'Target' });
-CameraFollow.attributes.add('lerpSpeed', { type: 'number', default: 5, title: 'Speed' });
-CameraFollow.attributes.add('offset', { type: 'vec3', default: [0, 2, 10], title: 'Offset' });

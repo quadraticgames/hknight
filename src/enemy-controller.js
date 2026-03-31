@@ -1,5 +1,8 @@
 class EnemyController extends pc.Script {
     initialize() {
+        if (this.speed === undefined) this.speed = 2;
+        if (this.health === undefined) this.health = 3;
+        if (this.knockbackForce === undefined) this.knockbackForce = 5;
         this.entity.tags.add('enemy');
         this.direction = -1; // -1 left, 1 right
         this.timer = 0;
@@ -88,6 +91,3 @@ class EnemyController extends pc.Script {
     }
 }
 pc.registerScript(EnemyController, 'enemyController');
-EnemyController.attributes.add('speed', { type: 'number', default: 2 });
-EnemyController.attributes.add('health', { type: 'number', default: 3 });
-EnemyController.attributes.add('knockbackForce', { type: 'number', default: 5 });
